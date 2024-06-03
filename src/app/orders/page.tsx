@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import OrderForm from '../../components/OrderForm'
 import { Order } from '../../types/types'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([])
@@ -18,18 +20,35 @@ const OrdersPage: React.FC = () => {
     fetchOrders()
   }, [])
 
-  const handleSave = () => {
-    setSelectedOrder(null)
-    const fetchOrders = async () => {
+  const handleSave = async (order: Order) => {
+    try {
+      if (order.id) {
+        const { id, ...orderData } = order
+        await axios.put(
+          `http://localhost:3002/sale-order-items/${id}`,
+          orderData,
+        )
+        toast.success('Order updated successfully!')
+      } else {
+        await axios.post('http://localhost:3002/sale-order-items', order)
+        toast.success('Order added successfully!')
+      }
+      setSelectedOrder(null)
       const response = await axios.get('http://localhost:3002/sale-order-items')
       setOrders(response.data)
+    } catch (error) {
+      toast.error('Error saving order.')
     }
-    fetchOrders()
   }
 
   const handleDelete = async (id: number) => {
-    await axios.delete(`http://localhost:3002/sale-order-items/${id}`)
-    setOrders(orders.filter((order) => order.id !== id))
+    try {
+      await axios.delete(`http://localhost:3002/sale-order-items/${id}`)
+      setOrders(orders.filter((order) => order.id !== id))
+      toast.success('Order deleted successfully!')
+    } catch (error) {
+      toast.error('Error deleting order.')
+    }
   }
 
   return (
@@ -85,6 +104,7 @@ const OrdersPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+      <ToastContainer />
     </div>
   )
 }

@@ -1,36 +1,31 @@
-import { useState, ChangeEvent, FormEvent } from 'react'
-import axios from 'axios'
-import { Order } from '../types/types'
+import { Order } from '@/types/types'
+import React, { useEffect, useState } from 'react'
 
 interface OrderFormProps {
-  order?: Order | null
-  onSave: () => void
+  order: Order | null
+  onSave: (order: Order) => void
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({ order, onSave }) => {
-  const [name, setName] = useState(order?.name || '')
-  const [quantity, setQuantity] = useState(order?.quantity || 0)
-  const [price, setPrice] = useState(order?.price || 0)
+  const [name, setName] = useState('')
+  const [quantity, setQuantity] = useState(0)
+  const [price, setPrice] = useState(0)
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    if (name === 'name') setName(value)
-    if (name === 'quantity') setQuantity(Number(value))
-    if (name === 'price') setPrice(Number(value))
-  }
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    const data: Order = { name, quantity, price }
-    if (order && order.id) {
-      await axios.put(
-        `http://localhost:3002/sale-order-items/${order.id}`,
-        data,
-      )
+  useEffect(() => {
+    if (order) {
+      setName(order.name)
+      setQuantity(order.quantity)
+      setPrice(order.price)
     } else {
-      await axios.post('http://localhost:3002/sale-order-items', data)
+      setName('')
+      setQuantity(0)
+      setPrice(0)
     }
-    onSave()
+  }, [order])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave({ id: order?.id, name, quantity, price })
   }
 
   return (
@@ -39,7 +34,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ order, onSave }) => {
         type="text"
         name="name"
         value={name}
-        onChange={handleChange}
+        onChange={(e) => setName(e.target.value)}
         placeholder="Name"
         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -47,7 +42,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ order, onSave }) => {
         type="number"
         name="quantity"
         value={quantity}
-        onChange={handleChange}
+        onChange={(e) => setQuantity(Number(e.target.value))}
         placeholder="Quantity"
         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -55,15 +50,15 @@ const OrderForm: React.FC<OrderFormProps> = ({ order, onSave }) => {
         type="number"
         name="price"
         value={price}
-        onChange={handleChange}
+        onChange={(e) => setPrice(Number(e.target.value))}
         placeholder="Price"
         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button
         type="submit"
-        className="w-full p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
+        className={`w-full p-2 rounded-lg text-white ${order ? 'bg-blue-500 hover:bg-blue-700' : 'bg-green-500 hover:bg-green-700'}`}
       >
-        Save
+        {order ? 'Update' : 'Save'}
       </button>
     </form>
   )
