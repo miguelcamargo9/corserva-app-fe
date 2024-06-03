@@ -16,7 +16,6 @@ const OrdersPage: React.FC = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items`,
       )
-      console.log('fetchOrders', response.data)
       setOrders(response.data)
     }
     fetchOrders()
