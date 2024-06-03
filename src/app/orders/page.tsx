@@ -13,7 +13,9 @@ const OrdersPage: React.FC = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const response = await axios.get('http://localhost:3002/sale-order-items')
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items`,
+      )
       console.log('fetchOrders', response.data)
       setOrders(response.data)
     }
@@ -25,16 +27,21 @@ const OrdersPage: React.FC = () => {
       if (order.id) {
         const { id, ...orderData } = order
         await axios.put(
-          `http://localhost:3002/sale-order-items/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items/${id}`,
           orderData,
         )
         toast.success('Order updated successfully!')
       } else {
-        await axios.post('http://localhost:3002/sale-order-items', order)
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items`,
+          order,
+        )
         toast.success('Order added successfully!')
       }
       setSelectedOrder(null)
-      const response = await axios.get('http://localhost:3002/sale-order-items')
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items`,
+      )
       setOrders(response.data)
     } catch (error) {
       toast.error('Error saving order.')
@@ -43,7 +50,9 @@ const OrdersPage: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:3002/sale-order-items/${id}`)
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/sale-order-items/${id}`,
+      )
       setOrders(orders.filter((order) => order.id !== id))
       toast.success('Order deleted successfully!')
     } catch (error) {

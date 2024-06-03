@@ -5,6 +5,7 @@ This is the frontend of the Corserva application, developed with React, TypeScri
 ## Table of Contents
 
 - [Installation](#installation)
+- [Environment Variables](#environment-variables)
 - [Usage](#usage)
 - [Available Scripts](#available-scripts)
 - [Technologies Used](#technologies-used)
@@ -25,6 +26,16 @@ This is the frontend of the Corserva application, developed with React, TypeScri
     ```bash
     npm install
     ```
+
+## Environment Variables
+
+This project uses environment variables to configure the API URL. Create a file named `.env.local` in the root of your project and add the following:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3002
+```
+
+This variable is used to configure the base URL for API requests.
 
 ## Usage
 To start the application in development mode, use the following command:
